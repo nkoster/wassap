@@ -1,46 +1,11 @@
-import React, {useEffect, useState} from 'react'
-import {
-  KeyboardAvoidingView,
-  TextInput,
-  StyleSheet,
-  View,
-  Text,
-  Keyboard,
-  TouchableWithoutFeedback, ScrollView,
-} from 'react-native'
+import { AuthProvider } from './src/context/useAuthContext'
+import Main from './src/Main'
 
-import Home from './src/screens/Home.jsx'
-
-const App = () => {
+export default function App() {
 
   return (
-    // <View style={styles.container}>
-      <Home />
-    // </View>
+    <AuthProvider>
+      <Main />
+    </AuthProvider>
   )
-
 }
-
-export default App
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // justifyContent: 'flex-end',
-  },
-  inputView: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    width: '100%',
-    minHeight: 30,
-    maxHeight: 120,
-  },
-  input: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    // marginBottom: 20,
-    // marginLeft: 20,
-    // marginRight: 20,
-    // maxHeight: 80,
-  },
-})
