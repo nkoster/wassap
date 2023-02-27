@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import {
   Keyboard, Text,
-  Animated, View, TextInput, StyleSheet, KeyboardAvoidingView, ScrollView,
+  Animated, View, TextInput, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity,
 } from 'react-native'
+import {Ionicons} from '@expo/vector-icons'
+import {LinearGradient} from 'expo-linear-gradient'
 
 const VIEW_HEIGHT = 90
 const TEXT_HEIGHT = 30
@@ -25,6 +27,7 @@ function TestScreen() {
   }, [])
 
   const keyboardWillShowHandler = (event) => {
+    console.log('duration', event.duration)
     Animated.timing(keyboardHeight, {
       duration: event.duration,
       toValue: event.endCoordinates.height,
@@ -58,15 +61,22 @@ function TestScreen() {
         <View
           style={{...styles.inputView, minHeight: textInputViewHeight}}
         >
-          <Text>+</Text>
           <TextInput
             placeholder=""
             style={{...styles.input, height: textHeight, maxHeight: TEXT_MAX_HEIGHT}}
             multiline={true}
             onContentSizeChange={(event) => setTextHeight(event.nativeEvent.contentSize.height)}
           />
-          <Text>+</Text>
-          <Text>+</Text>
+          <TouchableOpacity>
+            <LinearGradient
+              colors={['#f0f0f0', '#ccc']}
+              style={styles.submitButtonView}>
+              <Ionicons
+                name='md-paper-plane'
+                size={16}
+                color={'silver'} />
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
       </Animated.View>
   )
@@ -90,12 +100,10 @@ const styles = StyleSheet.create({
     minHeight: VIEW_HEIGHT,
     maxHeight: 110,
     borderStyle: 'solid',
-    borderTopWidth: '1px',
-    borderTopColor: '#d8d8d8',
+    borderTopWidth: .5,
+    borderTopColor: '#ccc',
     display: 'flex',
     flexDirection: 'row',
-    // minHeight: 60,
-    // maxHeight: 120,
   },
   text: {
     height: 40,
@@ -107,13 +115,22 @@ const styles = StyleSheet.create({
     minHeight: TEXT_HEIGHT,
     maxHeight: TEXT_MAX_HEIGHT,
     borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: '#d8d8d8',
+    borderWidth: .5,
+    borderColor: '#ccc',
     borderRadius: 20,
     flex: 1,
-    // marginBottom: 20,
-    // marginLeft: 20,
-    // marginRight: 20,
-    // maxHeight: 80,
   },
+  submitButtonView: {
+    backgroundColor: '',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderStyle: 'solid',
+    borderWidth: .5,
+    borderColor: '#aaa',
+    marginLeft: 8,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 })
