@@ -9,65 +9,16 @@ import {
   TouchableWithoutFeedback, ScrollView,
 } from 'react-native'
 
-import TestScreen from './src/screens/TestScreen.jsx'
+import Home from './src/screens/Home.jsx'
 
 const App = () => {
 
   return (
     // <View style={styles.container}>
-      <TestScreen />
+      <Home />
     // </View>
   )
 
-  // const [text, setText] = useState('')
-  // const [isKeyboardVisible, setKeyboardVisible] = useState(false)
-  //
-  // useEffect(() => {
-  //   Keyboard.addListener('keyboardDidShow', () => {
-  //     setKeyboardVisible(true)
-  //     console.log('Keyboard Shown')
-  //   })
-  //   Keyboard.addListener('keyboardDidHide', () => {
-  //     setKeyboardVisible(false)
-  //     console.log('Keyboard Hidden')
-  //   })
-  //   return () => {
-  //     Keyboard.removeAllListeners('keyboardDidShow')
-  //     Keyboard.removeAllListeners('keyboardDidHide')
-  //   }
-  // }, [])
-  //
-  // return (
-  //   // <View style={styles.container}>
-  //   // <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-  //   //   <View style={styles.container}>
-  //   <KeyboardAvoidingView behavior="padding" style={styles.container}>
-  //     <ScrollView>
-  //       <Text>aap</Text>
-  //       <Text>aap</Text>
-  //       <Text>aap</Text>
-  //       <Text>aap</Text>
-  //       <Text>aap</Text>
-  //       <Text>aap</Text>
-  //     </ScrollView>
-  //     <View style={styles.inputView}>
-  //       <TextInput
-  //         style={styles.input}
-  //         placeholder="Typ hier..."
-  //         value={text}
-  //         onChangeText={setText}
-  //         multiline={true}
-  //         onBlur={() => Keyboard.dismiss()}
-  //         // style={{backgroundColor: '#f0f0f0', padding: 10, borderRadius: 8}}
-  //       />
-  //       {isKeyboardVisible && (
-  //         <Text style={{color: 'red'}}>Keyboard is visible</Text>
-  //       )}
-  //     </View>
-  //   </KeyboardAvoidingView>
-  //   // </View>
-  //   // </TouchableWithoutFeedback>
-  // )
 }
 
 export default App

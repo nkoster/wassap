@@ -11,7 +11,7 @@ const TEXT_HEIGHT = 30
 const TEXT_MAX_HEIGHT = 80
 const APPLE_BLUE = '#007AFF'
 
-function TestScreen() {
+function Home() {
   const [keyboardHeight, setKeyboardHeight] = useState(new Animated.Value(0))
   const [textInputViewHeight, setTextInputViewHeight] = useState(VIEW_HEIGHT)
   const [textHeight, setTextHeight] = useState(TEXT_HEIGHT)
@@ -82,7 +82,7 @@ function TestScreen() {
   )
 }
 
-export default TestScreen
+export default Home
 
 const styles = StyleSheet.create({
   containerAnimatedView: {
