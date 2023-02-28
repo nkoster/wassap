@@ -3,8 +3,6 @@ import Clipper from './Clipper'
 
 function TheAnswer({ data }) {
 
-  console.log('DATA', data)
-
   const regexCode = /`([\s\S]+?)`/g
   const codes = data.match(regexCode)
   const regexCodeBlock = /```([\s\S]+?)```/g
@@ -12,14 +10,11 @@ function TheAnswer({ data }) {
   const regexBold = /\*\*([\s\S]+?)\*\*/g
   const bolds = data.match(regexBold)
 
-  // console.log('CODE', codeBlocks)
-
   return (
     <Text>
       {data.split(regexCodeBlock).map((item, index) => {
         if (codeBlocks && codeBlocks.includes('```' + item + '```')) {
           const code = item.split('\n').slice(1).join('\n').trim()
-          console.log('CODE BLOCK', code)
           return (
             <View key={index} style={styles.codeBlock}>
               <Text style={styles.codeBlockText}>
