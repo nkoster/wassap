@@ -12,6 +12,7 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  ImageBackground,
 } from 'react-native'
 import {Ionicons} from '@expo/vector-icons'
 import {LinearGradient} from 'expo-linear-gradient'
@@ -29,6 +30,7 @@ function Home() {
   const keyboardHeight = useRef(new Animated.Value(0))
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
   const [textInputViewHeight, setTextInputViewHeight] = useState(VIEW_HEIGHT)
+  const [justFinished, setJustFinished] = useState(false)
   const [textHeight, setTextHeight] = useState(TEXT_HEIGHT)
 
   const {accessToken, responses, logout, setResponses} = useContext(AuthContext)
@@ -46,9 +48,10 @@ function Home() {
       .then(response => {
         const newResponses = [...responses]
         const rgb = `rgb(${
-          Math.floor(Math.random() * 80 + 170)}, ${
-          Math.floor(Math.random() * 80 + 170)}, ${
-          Math.floor(Math.random() * 80 + 170)})`
+          Math.floor(Math.random() * 50 + 80)}, ${
+          Math.floor(Math.random() * 50 + 80)}, ${
+          Math.floor(Math.random() * 50 + 80)})`
+        console.log('RGB', rgb)
         newResponses.push({question: prompt, answer: response, rgb})
         setPrompt('')
         setLoading(false)
@@ -57,7 +60,8 @@ function Home() {
       .catch(err => {
         console.log(err)
         setLoading(false)
-        logout()
+        const newResponses = [...responses]
+        newResponses.push({question: prompt, answer: 'something went wrong', rgb: 'rgb(255, 0, 0)'})
       })
   }
 
@@ -71,7 +75,6 @@ function Home() {
   }, [])
 
   const keyboardWillShowHandler = (event) => {
-    console.log('keyboardWillShowHandler', keyboardHeight.current)
     Animated.timing(keyboardHeight.current, {
       duration: event.duration,
       toValue: event.endCoordinates.height,
@@ -82,7 +85,6 @@ function Home() {
   }
 
   const keyboardWillHideHandler = (event) => {
-    console.log('keyboardWillHideHandler', keyboardHeight.current)
     Animated.timing(keyboardHeight.current, {
       duration: event.duration,
       toValue: 0,
@@ -124,96 +126,101 @@ function Home() {
 
   return (
     <Animated.View style={{...styles.containerAnimatedView, marginBottom: keyboardHeight.current}}>
-      <View style={styles.topButtons}>
-        <Button title="Clear" onPress={clearData}/>
-        <Button title="Logout" onPress={logout}/>
-      </View>
-      <View style={styles.container}>
-        <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
-          <FlatList
-            ref={flatListRef}
-            style={{...styles.flatList, marginBottom: isKeyboardVisible ? -70: 0}}
-            data={responses}
-            keyExtractor={(item, index) => index.toString()}
-            onContentSizeChange={scrollToEnd}
-            onLayout={scrollToEnd}
-            renderItem={
-              ({item}) => {
-                const styles = StyleSheet.create({
-                  questionView: {
-                    backgroundColor: item.rgb,
-                    padding: 14,
-                    marginTop: 20,
-                    marginBottom: -10,
-                    marginLeft: 10,
-                    marginRight: 10,
-                    borderStyle: 'solid',
-                    borderRadius: 10,
-                  },
-                  textQuestion: {
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                  },
-                  answerView: {
-                    position: 'relative',
-                    padding: 14,
-                    marginTop: 20,
-                    marginBottom: 13,
-                    marginLeft: 10,
-                    marginRight: 10,
-                    borderWidth: 1,
-                    borderColor: item.rgb,
-                    borderStyle: 'solid',
-                    borderRadius: 10,
-                    backgroundColor: '#fff',
-                  },
-                  textAnswer: {
-                    fontSize: 16,
-                  },
-                })
+      {/*<ImageBackground source={require('../../assets/wassapbg.png')} style={{flex: 1}}>*/}
+        <View style={styles.topButtons}>
+          <Button title="Clear" onPress={clearData}/>
+          <Button title="Logout" onPress={logout}/>
+        </View>
+        <View style={styles.container}>
+          <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
+            <FlatList
+              ref={flatListRef}
+              style={{...styles.flatList, marginBottom:
+                  isKeyboardVisible ? -70 : 0}}
+              data={responses}
+              keyExtractor={(item, index) => index.toString()}
+              onContentSizeChange={scrollToEnd}
+              onLayout={scrollToEnd}
+              renderItem={
+                ({item}) => {
+                  const styles = StyleSheet.create({
+                    questionView: {
+                      backgroundColor: item.rgb,
+                      padding: 14,
+                      marginTop: 20,
+                      marginBottom: -10,
+                      marginLeft: 10,
+                      marginRight: 10,
+                      borderRadius: 10,
+                    },
+                    textQuestion: {
+                      fontSize: 14,
+                      fontWeight: 'bold',
+                      color: '#fff',
+                    },
+                    answerView: {
+                      position: 'relative',
+                      padding: 14,
+                      marginTop: 20,
+                      marginBottom: 13,
+                      marginLeft: 10,
+                      marginRight: 10,
+                      borderWidth: .4,
+                      borderColor: item.rgb,
+                      borderStyle: 'solid',
+                      borderRadius: 10,
+                      backgroundColor: '#fff',
+                    },
+                    textAnswer: {
+                      fontSize: 16,
+                    },
+                  })
 
-                return (
-                  <View>
-                    <View style={styles.questionView}>
-                      <Text style={styles.textQuestion}>{item.question}</Text>
-                      <Clipper data={item.question} color={'#777'}/>
+                  return (
+                    <View>
+                      <View style={styles.questionView}>
+                        <Text style={styles.textQuestion}>{item.question}</Text>
+                        <Clipper data={item.question} color={'white'}/>
+                      </View>
+                      <View style={styles.answerView}>
+                        <TheAnswer data={item.answer.replace(/^[\n?]+/, '')}/>
+                        <Clipper data={item.answer.replace(/^[\n?]+/, '')} color={'silver'}/>
+                      </View>
                     </View>
-                    <View style={styles.answerView}>
-                      <TheAnswer data={item.answer.replace(/^[\n?]+/, '')}/>
-                      <Clipper data={item.answer.replace(/^[\n?]+/, '')} color={'silver'}/>
-                    </View>
-                  </View>
-                )
+                  )
+                }
               }
-            }
-          />
-      </KeyboardAvoidingView>
-      </View>
-      <View
-        style={{...styles.inputView, minHeight: textInputViewHeight}}
-      >
-        <TextInput
-          placeholder=""
-          style={{...styles.input, height: textHeight, maxHeight: TEXT_MAX_HEIGHT}}
-          onChangeText={handleChangePrompt}
-          value={prompt}
-          multiline={true}
-          onContentSizeChange={(event) => setTextHeight(event.nativeEvent.contentSize.height)}
-        />
-        <TouchableOpacity
-          disabled={loading || prompt === ''}
-          onPress={gptChat}
+            />
+          </KeyboardAvoidingView>
+        </View>
+        <View
+          style={{...styles.inputView}}
         >
-          <LinearGradient
-            colors={['#f0f0f0', '#ccc']}
-            style={styles.submitButtonView}>
-            {loading ? <ActivityIndicator size="small" color="silver"/> : <Ionicons
-              name="md-paper-plane"
-              size={16}
-              color={prompt.trim() ? 'black' : 'silver'}/>}
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+          <TextInput
+            placeholder=""
+            style={{...styles.input}}
+            onChangeText={handleChangePrompt}
+            value={prompt}
+            multiline={true}
+            onContentSizeChange={(event) => setTextHeight(event.nativeEvent.contentSize.height)}
+          />
+          <TouchableOpacity
+            disabled={loading || prompt === ''}
+            onPress={gptChat}
+          >
+            <LinearGradient
+              colors={['#fff', '#ddd']}
+              style={styles.submitButtonView}>
+              {loading ? <ActivityIndicator size="small" color="#999"/> : <Ionicons
+                name="md-paper-plane"
+                size={16}
+                color={prompt.trim() ? 'black' : 'silver'}
+                style={{transform: [{translateX: -1.5}, {rotate: '45deg'}]}}
+                />}
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      {/*</ImageBackground>*/}
     </Animated.View>
   )
 }
@@ -224,6 +231,7 @@ const styles = StyleSheet.create({
   containerAnimatedView: {
     flex: 1,
     justifyContent: 'flex-end',
+    backgroundColor: '#ddd',
   },
   topButtons: {
     width: '100%',
@@ -239,13 +247,13 @@ const styles = StyleSheet.create({
   },
   inputView: {
     alignSelf: 'flex-end',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#f6f6f6',
     padding: 10,
     width: '100%',
     minHeight: VIEW_HEIGHT,
     borderStyle: 'solid',
-    borderTopWidth: .5,
-    borderTopColor: '#ccc',
+    borderTopWidth: .4,
+    borderTopColor: '#888',
     display: 'flex',
     flexDirection: 'row',
   },
@@ -260,8 +268,8 @@ const styles = StyleSheet.create({
     minHeight: TEXT_HEIGHT,
     maxHeight: TEXT_MAX_HEIGHT,
     borderStyle: 'solid',
-    borderWidth: .5,
-    borderColor: '#ccc',
+    borderWidth: .4,
+    borderColor: '#888',
     borderRadius: 20,
     flex: 1,
   },
@@ -271,8 +279,8 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     borderStyle: 'solid',
-    borderWidth: .5,
-    borderColor: '#aaa',
+    borderWidth: .4,
+    borderColor: '#888',
     marginLeft: 8,
     display: 'flex',
     justifyContent: 'center',
