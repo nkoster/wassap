@@ -12,7 +12,6 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
-  ImageBackground,
 } from 'react-native'
 import {Ionicons} from '@expo/vector-icons'
 import {LinearGradient} from 'expo-linear-gradient'
@@ -23,15 +22,12 @@ import {gptchat} from '../api'
 
 const VIEW_HEIGHT = 90
 const TEXT_HEIGHT = 30
-const TEXT_MAX_HEIGHT = 80
-const APPLE_BLUE = '#007AFF'
 
 function Home() {
   const keyboardHeight = useRef(new Animated.Value(0))
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
-  const [textInputViewHeight, setTextInputViewHeight] = useState(VIEW_HEIGHT)
-  const [justFinished, setJustFinished] = useState(false)
   const [textHeight, setTextHeight] = useState(TEXT_HEIGHT)
+  const [bottomViewHeight, setBottomViewHeight] = useState(VIEW_HEIGHT)
+  const [typing, setTyping] = useState(false)
 
   const {accessToken, responses, logout, setResponses} = useContext(AuthContext)
   const [prompt, setPrompt] = useState('')
@@ -80,8 +76,7 @@ function Home() {
       toValue: event.endCoordinates.height,
       useNativeDriver: false,
     }).start()
-    setIsKeyboardVisible(true)
-    setTextInputViewHeight(50)
+    setBottomViewHeight(50)
   }
 
   const keyboardWillHideHandler = (event) => {
@@ -90,8 +85,7 @@ function Home() {
       toValue: 0,
       useNativeDriver: false,
     }).start()
-    setIsKeyboardVisible(false)
-    setTextInputViewHeight(VIEW_HEIGHT)
+    setBottomViewHeight(VIEW_HEIGHT)
   }
 
   const clearData = () => {
@@ -125,153 +119,150 @@ function Home() {
   }
 
   return (
-    <Animated.View style={{...styles.containerAnimatedView, marginBottom: keyboardHeight.current}}>
-      {/*<ImageBackground source={require('../../assets/wassapbg.png')} style={{flex: 1}}>*/}
-        <View style={styles.topButtons}>
-          <Button title="Clear" onPress={clearData}/>
-          <Button title="Logout" onPress={logout}/>
-        </View>
-        <View style={styles.container}>
-          <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
-            <FlatList
-              ref={flatListRef}
-              style={{...styles.flatList, marginBottom:
-                  isKeyboardVisible ? -70 : 0}}
-              data={responses}
-              keyExtractor={(item, index) => index.toString()}
-              onContentSizeChange={scrollToEnd}
-              onLayout={scrollToEnd}
-              renderItem={
-                ({item}) => {
-                  const styles = StyleSheet.create({
-                    questionView: {
-                      backgroundColor: item.rgb,
-                      padding: 14,
-                      marginTop: 20,
-                      marginBottom: -10,
-                      marginLeft: 10,
-                      marginRight: 10,
-                      borderRadius: 10,
-                    },
-                    textQuestion: {
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      color: '#fff',
-                    },
-                    answerView: {
-                      position: 'relative',
-                      padding: 14,
-                      marginTop: 20,
-                      marginBottom: 13,
-                      marginLeft: 10,
-                      marginRight: 10,
-                      borderWidth: .4,
-                      borderColor: item.rgb,
-                      borderStyle: 'solid',
-                      borderRadius: 10,
-                      backgroundColor: '#fff',
-                    },
-                    textAnswer: {
-                      fontSize: 16,
-                    },
-                  })
+    <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
+      <View style={styles.topView}>
+        <Button title="Clear" onPress={clearData}/>
+        <Button title="Logout" onPress={logout}/>
+      </View>
+      <View style={styles.middleView}>
+        <FlatList
+          ref={flatListRef}
+          style={{flex: 1}}
+          data={responses}
+          keyExtractor={(item, index) => index.toString()}
+          onContentSizeChange={scrollToEnd}
+          onLayout={scrollToEnd}
+          renderItem={
+            ({item}) => {
+              const styles = StyleSheet.create({
+                questionView: {
+                  backgroundColor: item.rgb,
+                  padding: 14,
+                  marginTop: 20,
+                  marginBottom: -10,
+                  marginLeft: 10,
+                  marginRight: 10,
+                  borderRadius: 10,
+                },
+                textQuestion: {
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  color: '#fff',
+                },
+                answerView: {
+                  position: 'relative',
+                  padding: 14,
+                  marginTop: 20,
+                  marginBottom: 13,
+                  marginLeft: 10,
+                  marginRight: 10,
+                  borderWidth: .4,
+                  borderColor: item.rgb,
+                  borderStyle: 'solid',
+                  borderRadius: 10,
+                  backgroundColor: '#fff',
+                },
+                textAnswer: {
+                  fontSize: 16,
+                },
+              })
 
-                  return (
-                    <View>
-                      <View style={styles.questionView}>
-                        <Text style={styles.textQuestion}>{item.question}</Text>
-                        <Clipper data={item.question} color={'white'}/>
-                      </View>
-                      <View style={styles.answerView}>
-                        <TheAnswer data={item.answer.replace(/^[\n?]+/, '')}/>
-                        <Clipper data={item.answer.replace(/^[\n?]+/, '')} color={'silver'}/>
-                      </View>
-                    </View>
-                  )
-                }
-              }
-            />
-          </KeyboardAvoidingView>
-        </View>
-        <View
-          style={{...styles.inputView}}
+              return (
+                <View>
+                  <View style={styles.questionView}>
+                    <Text style={styles.textQuestion}>{item.question}</Text>
+                    <Clipper data={item.question} color={'white'}/>
+                  </View>
+                  <View style={styles.answerView}>
+                    <TheAnswer data={item.answer.replace(/^[\n?]+/, '')}/>
+                    <Clipper data={item.answer.replace(/^[\n?]+/, '')} color={'silver'}/>
+                  </View>
+                </View>
+              )
+            }
+          }
+        />
+      </View>
+      <View style={{...styles.bottomView, height: typing ? null : bottomViewHeight, maxHeight: 80,
+      marginBottom: typing ? 87 : 0}}>
+        <TextInput
+          placeholder=""
+          style={{...styles.input, height: textHeight, minHeight: TEXT_HEIGHT, maxHeight: 60}}
+          onChangeText={handleChangePrompt}
+          value={prompt}
+          multiline={true}
+          onFocus={() => setTyping(true)}
+          onBlur={() => setTyping(false)}
+          onContentSizeChange={(event) => setTextHeight(event.nativeEvent.contentSize.height)}
+        />
+        <TouchableOpacity
+          disabled={loading || prompt === ''}
+          onPress={gptChat}
         >
-          <TextInput
-            placeholder=""
-            style={{...styles.input}}
-            onChangeText={handleChangePrompt}
-            value={prompt}
-            multiline={true}
-            onContentSizeChange={(event) => setTextHeight(event.nativeEvent.contentSize.height)}
-          />
-          <TouchableOpacity
-            disabled={loading || prompt === ''}
-            onPress={gptChat}
-          >
-            <LinearGradient
-              colors={['#fff', '#ddd']}
-              style={styles.submitButtonView}>
-              {loading ? <ActivityIndicator size="small" color="#999"/> : <Ionicons
-                name="md-paper-plane"
-                size={16}
-                color={prompt.trim() ? 'black' : 'silver'}
-                style={{transform: [{translateX: -1.5}, {rotate: '45deg'}]}}
-                />}
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      {/*</ImageBackground>*/}
-    </Animated.View>
+          <LinearGradient
+            colors={['#fff', '#ddd']}
+            style={styles.submitButtonView}>
+            {loading ? <ActivityIndicator size="small" color="#999"/> : <Ionicons
+              name="md-paper-plane"
+              size={16}
+              color={prompt.trim() ? 'black' : 'silver'}
+              style={{transform: [{translateX: -1.5}, {rotate: '45deg'}]}}
+            />}
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   )
 }
 
 export default Home
 
 const styles = StyleSheet.create({
-  containerAnimatedView: {
+  container: {
     flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: '#ddd',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   topButtons: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  flatList: {
+  topView: {
+    height: 40,
     width: '100%',
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  inputView: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#f6f6f6',
-    padding: 10,
-    width: '100%',
-    minHeight: VIEW_HEIGHT,
-    borderStyle: 'solid',
-    borderTopWidth: .4,
-    borderTopColor: '#888',
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  text: {
-    height: 40,
+  middleView: {
+    flex: 1,
+    backgroundColor: '#ddd',
+  },
+  bottomView: {
+    height: VIEW_HEIGHT,
+    minHeight: 50,
+    width: '100%',
+    backgroundColor: '#f0f0f0',
+    borderTopColor: '#888',
+    borderStyle: 'solid',
+    borderTopWidth: .4,
+    padding: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   input: {
     backgroundColor: '#fff',
     paddingLeft: 12,
-    paddingRight: 12,
     fontSize: 16,
-    minHeight: TEXT_HEIGHT,
-    maxHeight: TEXT_MAX_HEIGHT,
+    flex: 1,
+    height: 30,
     borderStyle: 'solid',
     borderWidth: .4,
     borderColor: '#888',
     borderRadius: 20,
-    flex: 1,
   },
   submitButtonView: {
     backgroundColor: '',
