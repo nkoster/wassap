@@ -23,6 +23,7 @@ import {BlurView} from 'expo-blur'
 
 const VIEW_HEIGHT = 90
 const TEXT_HEIGHT = 30
+const BASE_INTENSITY = 30.01
 
 function Home() {
   const keyboardHeight = useRef(new Animated.Value(0))
@@ -34,14 +35,18 @@ function Home() {
   const [prompt, setPrompt] = useState('')
   const [loading, setLoading] = useState(false)
   const flatListRef = useRef()
-  const [intensity, setIntensity] = useState(20.1)
+  const [intensity, setIntensity] = useState(BASE_INTENSITY)
 
   const handleChangePrompt = (text) => {
     setPrompt(text)
   }
 
+  function newIntensity() {
+    setIntensity(BASE_INTENSITY + (Math.random() / 10))
+  }
+
   useEffect(() => {
-    setIntensity(20 + Math.random())
+    newIntensity()
   }, [responses])
 
   const gptChat = () => {
@@ -50,15 +55,15 @@ function Home() {
       .then(response => {
         const newResponses = [...responses]
         const rgb = `rgb(${
-          Math.floor(Math.random() * 50 + 80)}, ${
-          Math.floor(Math.random() * 50 + 80)}, ${
-          Math.floor(Math.random() * 50 + 80)})`
+          Math.floor(Math.random() * 50 + 130)}, ${
+          Math.floor(Math.random() * 50 + 130)}, ${
+          Math.floor(Math.random() * 50 + 130)})`
         console.log('RGB', rgb)
         newResponses.push({question: prompt, answer: response, rgb})
         setPrompt('')
         setLoading(false)
         setResponses(newResponses)
-        setIntensity(20 + Math.random())
+        newIntensity()
       })
       .catch(err => {
         console.log(err)
@@ -84,6 +89,7 @@ function Home() {
       useNativeDriver: false,
     }).start()
     setBottomViewHeight(50)
+    newIntensity()
   }
 
   const keyboardWillHideHandler = (event) => {
@@ -93,6 +99,7 @@ function Home() {
       useNativeDriver: false,
     }).start()
     setBottomViewHeight(VIEW_HEIGHT)
+    newIntensity()
   }
 
   const clearData = () => {
@@ -109,7 +116,7 @@ function Home() {
           onPress: () => {
             setResponses([])
             setPrompt('')
-            setIntensity(20 + Math.random())
+            newIntensity()
           },
         },
       ],
@@ -127,7 +134,7 @@ function Home() {
   }
 
   const handleScroll = () => {
-    setIntensity(20 + Math.random())
+    newIntensity()
   }
 
   return (
@@ -135,7 +142,7 @@ function Home() {
       <BlurView
         intensity={intensity}
         style={styles.topButtons}
-        tint="dark"
+        tint="light"
       >
         <Button title="Clear" color="black" onPress={clearData}/>
         <Button title="Logout" color="black" onPress={logout}/>
@@ -204,7 +211,7 @@ function Home() {
       </View>
       <View style={{
         ...styles.bottomView, height: typing ? null : bottomViewHeight, maxHeight: 80,
-        marginBottom: typing ? 87 : 0,
+        marginBottom: typing ? 87 : 0, /* hack, needs improvement */
       }}>
         <TextInput
           placeholder=""
@@ -252,7 +259,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: 39,
     zIndex: 1,
-    // width: '100%',
+    paddingHorizontal: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomColor: '#888',
