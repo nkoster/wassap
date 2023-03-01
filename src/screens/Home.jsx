@@ -19,6 +19,7 @@ import {AuthContext} from '../context/useAuthContext'
 import Clipper from '../components/Clipper'
 import TheAnswer from '../components/TheAnswer'
 import {gptchat} from '../api'
+import {BlurView} from 'expo-blur'
 
 const VIEW_HEIGHT = 90
 const TEXT_HEIGHT = 30
@@ -33,10 +34,15 @@ function Home() {
   const [prompt, setPrompt] = useState('')
   const [loading, setLoading] = useState(false)
   const flatListRef = useRef()
+  const [intensity, setIntensity] = useState(20.1)
 
   const handleChangePrompt = (text) => {
     setPrompt(text)
   }
+
+  useEffect(() => {
+    setIntensity(20 + Math.random())
+  }, [responses])
 
   const gptChat = () => {
     setLoading(true)
@@ -52,6 +58,7 @@ function Home() {
         setPrompt('')
         setLoading(false)
         setResponses(newResponses)
+        setIntensity(20 + Math.random())
       })
       .catch(err => {
         console.log(err)
@@ -102,6 +109,7 @@ function Home() {
           onPress: () => {
             setResponses([])
             setPrompt('')
+            setIntensity(20 + Math.random())
           },
         },
       ],
@@ -118,12 +126,20 @@ function Home() {
     })
   }
 
+  const handleScroll = () => {
+    setIntensity(20 + Math.random())
+  }
+
   return (
     <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
-      <View style={styles.topView}>
-        <Button title="Clear" onPress={clearData}/>
-        <Button title="Logout" onPress={logout}/>
-      </View>
+      <BlurView
+        intensity={intensity}
+        style={styles.topButtons}
+        tint="dark"
+      >
+        <Button title="Clear" color="black" onPress={clearData}/>
+        <Button title="Logout" color="black" onPress={logout}/>
+      </BlurView>
       <View style={styles.middleView}>
         <FlatList
           ref={flatListRef}
@@ -132,16 +148,18 @@ function Home() {
           keyExtractor={(item, index) => index.toString()}
           onContentSizeChange={scrollToEnd}
           onLayout={scrollToEnd}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
           renderItem={
-            ({item}) => {
+            ({item, index}) => {
               const styles = StyleSheet.create({
                 questionView: {
                   backgroundColor: item.rgb,
                   padding: 14,
                   marginTop: 20,
                   marginBottom: -10,
-                  marginLeft: 10,
-                  marginRight: 10,
+                  marginLeft: 16,
+                  marginRight: 16,
                   borderRadius: 10,
                 },
                 textQuestion: {
@@ -154,8 +172,8 @@ function Home() {
                   padding: 14,
                   marginTop: 20,
                   marginBottom: 13,
-                  marginLeft: 10,
-                  marginRight: 10,
+                  marginLeft: 16,
+                  marginRight: 16,
                   borderWidth: .4,
                   borderColor: item.rgb,
                   borderStyle: 'solid',
@@ -169,6 +187,7 @@ function Home() {
 
               return (
                 <View>
+                  {index === 0 && <View style={{height: 30}}/>}
                   <View style={styles.questionView}>
                     <Text style={styles.textQuestion}>{item.question}</Text>
                     <Clipper data={item.question} color={'white'}/>
@@ -183,8 +202,10 @@ function Home() {
           }
         />
       </View>
-      <View style={{...styles.bottomView, height: typing ? null : bottomViewHeight, maxHeight: 80,
-      marginBottom: typing ? 87 : 0}}>
+      <View style={{
+        ...styles.bottomView, height: typing ? null : bottomViewHeight, maxHeight: 80,
+        marginBottom: typing ? 87 : 0,
+      }}>
         <TextInput
           placeholder=""
           style={{...styles.input, height: textHeight, minHeight: TEXT_HEIGHT, maxHeight: 60}}
@@ -194,7 +215,7 @@ function Home() {
           onFocus={() => setTyping(true)}
           onBlur={() => setTyping(false)}
           onContentSizeChange={(event) => setTextHeight(event.nativeEvent.contentSize.height)}
-        />
+        ></TextInput>
         <TouchableOpacity
           disabled={loading || prompt === ''}
           onPress={gptChat}
@@ -202,7 +223,7 @@ function Home() {
           <LinearGradient
             colors={['#fff', '#ddd']}
             style={styles.submitButtonView}>
-            {loading ? <ActivityIndicator size="small" color="#999"/> : <Ionicons
+            {loading ? <ActivityIndicator size="small" color="#666"/> : <Ionicons
               name="md-paper-plane"
               size={16}
               color={prompt.trim() ? 'black' : 'silver'}
@@ -225,16 +246,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   topButtons: {
-    width: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 39,
+    zIndex: 1,
+    // width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderBottomColor: '#888',
+    borderStyle: 'solid',
+    borderBottomWidth: .4,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
   },
   topView: {
-    height: 40,
+    height: 39,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderBottomColor: '#888',
+    borderStyle: 'solid',
+    borderBottomWidth: .4,
   },
   middleView: {
     flex: 1,
@@ -249,6 +283,8 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderTopWidth: .4,
     padding: 10,
+    paddingLeft: 16,
+    paddingRight: 16,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
