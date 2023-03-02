@@ -31,7 +31,7 @@ function Home() {
   const [bottomViewHeight, setBottomViewHeight] = useState(VIEW_HEIGHT)
   const [typing, setTyping] = useState(false)
 
-  const {accessToken, responses, logout, setResponses} = useContext(AuthContext)
+  const {accessToken, username, responses, logout, setResponses} = useContext(AuthContext)
   const [prompt, setPrompt] = useState('')
   const [loading, setLoading] = useState(false)
   const flatListRef = useRef()
@@ -51,7 +51,7 @@ function Home() {
 
   const gptChat = () => {
     setLoading(true)
-    gptchat(prompt, responses, accessToken)
+    gptchat(prompt, responses, accessToken, username)
       .then(response => {
         const newResponses = [...responses]
         const rgb = `rgb(${
@@ -59,7 +59,7 @@ function Home() {
           Math.floor(Math.random() * 50 + 130)}, ${
           Math.floor(Math.random() * 50 + 130)})`
         console.log('RGB', rgb)
-        newResponses.push({question: prompt, answer: response, rgb})
+        newResponses.push({key: Math.random().toString(), question: prompt, answer: response, rgb})
         setPrompt('')
         setLoading(false)
         setResponses(newResponses)
@@ -69,7 +69,7 @@ function Home() {
         console.log(err)
         setLoading(false)
         const newResponses = [...responses]
-        newResponses.push({question: prompt, answer: 'something went wrong', rgb: 'rgb(255, 0, 0)'})
+        newResponses.push({key: Math.random().toString(), question: prompt, answer: 'something went wrong', rgb: 'rgb(255, 0, 0)'})
       })
   }
 
@@ -144,8 +144,8 @@ function Home() {
         style={styles.topButtons}
         tint="light"
       >
-        <Button title="Clear" color="black" onPress={clearData}/>
-        <Button title="Logout" color="black" onPress={logout}/>
+        <Button title="clear" color="black" onPress={clearData}/>
+        <Button title="leave" color="black" onPress={logout}/>
       </BlurView>
       <View style={styles.middleView}>
         <FlatList
