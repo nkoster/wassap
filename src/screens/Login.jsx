@@ -17,6 +17,7 @@ const LoginScreen = () => {
     await login(username, password)
     if (accessToken) {
       setError('')
+      console.log('login successful', accessToken)
       navigation.navigate('Home')
     } else {
       setUsername('')
@@ -50,6 +51,7 @@ const LoginScreen = () => {
           <Button
             title='sign in'
             onPress={handleLogin}
+            color='black'
             disabled={!username || !password}
           />
         </View>
