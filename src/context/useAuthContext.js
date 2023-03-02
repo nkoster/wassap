@@ -1,9 +1,10 @@
-import React, { createContext, useReducer } from 'react'
+import React, {createContext, useReducer} from 'react'
 
 const initialState = {
   accessToken: null,
   refreshToken: null,
-  responses: []
+  username: null,
+  responses: [],
 }
 
 const authReducer = (state, action) => {
@@ -12,18 +13,20 @@ const authReducer = (state, action) => {
       return {
         ...state,
         accessToken: action.payload.accessToken,
-        refreshToken: action.payload.refreshToken
+        refreshToken: action.payload.refreshToken,
+        username: action.payload.username,
       }
     case 'LOGOUT':
       return {
         ...state,
         accessToken: null,
-        refreshToken: null
+        refreshToken: null,
+        username: null,
       }
     case 'SET_RESPONSES':
       return {
         ...state,
-        responses: action.payload
+        responses: action.payload,
       }
   }
   return state
@@ -31,7 +34,7 @@ const authReducer = (state, action) => {
 
 export const AuthContext = createContext(initialState)
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
   const [state, dispatch] = useReducer(authReducer, initialState, () => initialState)
 
   const login = async (username, password) => {
@@ -39,18 +42,18 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch('https://noknok.w3b.net/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           username: username,
-          password: password
-        })
+          password: password,
+        }),
       })
 
       const data = await response.json()
       if (response.ok) {
         console.log('Login successful.')
-        dispatch({ type: 'LOGIN', payload: { accessToken: data.accessToken, refreshToken: data.refreshToken } })
+        dispatch({type: 'LOGIN', payload: {accessToken: data.accessToken, refreshToken: data.refreshToken, username}})
       } else {
         console.log('Login failed.')
       }
@@ -66,11 +69,11 @@ export const AuthProvider = ({ children }) => {
     if (response.ok) {
       console.log('Logout successful.')
     }
-    dispatch({ type: 'LOGOUT' })
+    dispatch({type: 'LOGOUT'})
   }
 
   const setResponses = async (responses) => {
-    dispatch({ type: 'SET_RESPONSES', payload: responses })
+    dispatch({type: 'SET_RESPONSES', payload: responses})
   }
 
   return (
@@ -78,10 +81,11 @@ export const AuthProvider = ({ children }) => {
       value={{
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
+        username: state.username,
         responses: state.responses,
         login,
         logout,
-        setResponses
+        setResponses,
       }}
     >
       {children}
