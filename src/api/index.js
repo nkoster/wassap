@@ -1,4 +1,4 @@
-export async function gptchat(prompt, responses, accessToken) {
+export async function gptchat(prompt, responses, accessToken, username) {
   const response = await fetch('https://noknok.w3b.net/gptchat', {
     method: 'POST',
     headers: {
@@ -7,7 +7,8 @@ export async function gptchat(prompt, responses, accessToken) {
     },
     body: JSON.stringify({
       prompt,
-      responses
+      responses,
+      username
     })
   }).then(res => {
     try {
