@@ -10,13 +10,13 @@ const Stack = createStackNavigator()
 
 export default function Main() {
 
-  const { accessToken } = useContext(AuthContext)
+  const { accessToken, username } = useContext(AuthContext)
 
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Home'>
-        {accessToken ? null : <Stack.Screen name='Login' component={LoginScreen} options={{ title: 'MindBox AI' }} />}
-        {accessToken ? <Stack.Screen name='Home' component={HomeScreen} options={{ title: 'MindBox AI' }} /> : null}
+        {accessToken ? null : <Stack.Screen name='Login' component={LoginScreen} options={{ title: 'mindbox 🤖 AI' }} />}
+        {accessToken ? <Stack.Screen name='Home' component={HomeScreen} options={{ title: `mindbox 🤖 ${username}` }} /> : null}
       </Stack.Navigator>
     </NavigationContainer>
   )
