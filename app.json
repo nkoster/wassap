@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "wassap",
-    "slug": "wassap",
+    "name": "mindboxai",
+    "slug": "mindboxai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nielsdapiels.mindboxai"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d0d5cba7-36ea-4fd9-a01b-160f02f773bc"
+      }
     }
   }
 }
