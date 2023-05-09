@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "mindboxai",
-    "slug": "mindboxai",
-    "version": "1.0.0",
+    "name": "amindbox",
+    "slug": "amindbox",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,21 +15,24 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "1.0.2",
       "supportsTablet": true,
-      "bundleIdentifier": "com.nielsdapiels.mindboxai"
+      "bundleIdentifier": "com.nielsdapiels.amindbox"
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.nielsdapiels.amindbox"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "d0d5cba7-36ea-4fd9-a01b-160f02f773bc"
+        "projectId": "605a2cd1-9f61-45fc-bcba-b06ae53757b7"
       }
     }
   }
